@@ -45,7 +45,7 @@ class BackyardFlyer(Drone):
                 self.check_state += 1
 
                 if self.check_state == len(self.path):
-                    self.flight_state = States.LANDING
+                    self.landing_transition()
                 else:
                     self.waypoint_transition()
 
@@ -56,7 +56,9 @@ class BackyardFlyer(Drone):
         This triggers when `MsgID.LOCAL_VELOCITY` is received and self.local_velocity contains new data
         """
         if self.flight_state == States.LANDING:
-            self.disarming_transition()
+            if ((self.global_position[2] - self.global_home[2] < 0.1) and
+                    abs(self.local_position[2]) < 0.01):
+                self.disarming_transition()
 
     def state_callback(self):
         """
